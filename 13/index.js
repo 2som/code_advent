@@ -4,6 +4,8 @@ const leftEntries = [];
 const rightEntries = [];
 let count = 0;
 
+const dividerPackets = [[[2]], [[6]]]
+
 processFile("input.large.txt", (line) => {
   count++;
   if (count % 3 === 0) {
@@ -16,21 +18,13 @@ processFile("input.large.txt", (line) => {
 
   rightEntries.push(JSON.parse(line));
 }).then(() => {
-  const indicies = [];
-  leftEntries.forEach((entry, index) => {
-    const result = compare(entry, rightEntries[index]);
-    if (!result) {
-      console.log("RESULT UNDEFINED", index + 1);
-    }
-    if (result === RIGHT_ORDER) {
-      indicies.push(index + 1);
-    }
-  });
-
-  console.log(indicies.reduce((a, b) => a + b, 0));
+  const sortedPackets = [...leftEntries, ...rightEntries, ...dividerPackets].sort((a, b) => compare(a, b)).reverse();
+  const dividerIndicies = sortedPackets.reduce((acc, curr, index) => dividerPackets.includes(curr) ? [...acc, index + 1] : acc, [])
+  console.log(dividerIndicies[0] * dividerIndicies[1]);
+  
 });
 
-const WRONG_ORDER = 2;
+const WRONG_ORDER = -1;
 const RIGHT_ORDER = 1;
 
 const compare = (left, right) => {
@@ -73,5 +67,3 @@ const compare = (left, right) => {
     return RIGHT_ORDER;
   }
 };
-
-// console.log(compare([[8],[2,[8]]], [[],[[0,[0,10,6]],[6]],[7],[[2,[7,2,9,1,4],[8,8,0,2,6]],[3],10,2,[6]],[]]))
